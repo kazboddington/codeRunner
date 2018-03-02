@@ -26,7 +26,7 @@ int main(int argc, const char *argv[])
         uint32_t destlen = 0;
         int err = file_to_buffer(&dest, &destlen, filename);
         if (err != SUCCESS){
-                debug_print("Failed to read file into buffer error: %d.\n", err);
+                debug_print("Failed to read file into buf error: %d.\n", err);
                 return err;
         }
 

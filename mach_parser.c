@@ -18,11 +18,21 @@
 void print_mach_hdr(struct Mach_header* header)
 {
         if (header == NULL)
-                debug_print("Ca't print mach-o headder - arg is NULL");
-
-       
+                debug_print("Can't print mach-o headder - arg is NULL");
+        printf("MACH-O HEADER\n");
+        printf("\tMagic is: 0x%08x\n", header->magic);
+        printf("\tCputype is 0x%8x, subtype 0x%8x\n", 
+                        header->cputype, header->cpusubtype);
+        printf("\tFiletype is %u\n", header->filetype);
+        printf("\tNumber of commands is %u\n", header->ncmds);
+        printf("\tTotal size of commands is %u\n", header->sizeofcmds);
+        printf("\tFlags set are: ");
+        uint32_t flags = header->flags;
+        for (int i = 31; i >= 0; i--) 
+                printf("%0x", (flags >> i) & 0x01);
+        
+        printf("\n");
 }
-
 
 /**
  * @brief       Check the values in the mach_header are valid.
@@ -41,7 +51,7 @@ int verify_mach_hdr(struct Mach_header* header)
         }
 
         if (header->cputype != ECPU_x86_64) {
-                debug_print("cputype not valid or not implemented (%d).\n", 
+                debug_print("cputype not valid or not implemented (%u).\n", 
                                 header->cputype);
                 return INVALID_MACHO;
         }
@@ -53,7 +63,7 @@ int verify_mach_hdr(struct Mach_header* header)
         }
         
         if (header->filetype != MH_EXECUTE) {
-                debug_print("No an executtable mach-o (filetype is %d).",
+                debug_print("No an executtable mach-o (filetype is %u).",
                                 header->filetype);
                 debug_print("This file type is currently not supported\n");
                 return MACH_NOT_SUPPORTED;
@@ -63,7 +73,6 @@ int verify_mach_hdr(struct Mach_header* header)
                 debug_print("Cannot execute, undefined refs flag set.\n");
                 return INVALID_MACHO;
         }
-
         
         return SUCCESS;
 }
@@ -81,14 +90,24 @@ int verify_mach_hdr(struct Mach_header* header)
  */
 int parse_mach(struct Mach *mach, uint8_t* buf, uint32_t buflen)
 {
+        int bufoff = 0;
         if (buflen < sizeof(struct Mach_header)){
                 debug_print("Mach not large enough to be valid.\n");
                 return INVALID_MACHO;
         }
 
         struct Mach_header* hdr = (struct Mach_header *) buf;
+        bufoff += sizeof(struct Mach_header *);
         int err = verify_mach_hdr(hdr);
+        if (err  != SUCCESS)
+                return err;
         print_mach_hdr(hdr);
+         
+        
+
+
+
+
         
         return SUCCESS;
 }
