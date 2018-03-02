@@ -7,37 +7,35 @@
 #include <inttypes.h>
 #include "debug.h"
 #include "file_utils.h"
-#include "elf_parser.h"
+#include "mach_parser.h"
+#include "mach_structs.h"
 
 /**
- * FUNCITON NAME:       main
- * 
- * DESCRIPTION:         Main entry point of program, will load and run an ELF file
+ * @brief       Main entry point of program, will load and run an ELF file
  */
 int main(int argc, const char *argv[])
 {
-       
         if (argc < 2){
-                printf("Usage: %s [elf_binary] [arguments]\n", argv[0]);
+                printf("Usage: %s [Mach-o file] [arguments]\n", argv[0]);
                 return 0;
         }
 
         uint8_t *dest;
         const char *filename = argv[1];
 
-        int err = file_to_buffer(&dest, filename);
+        uint32_t destlen = 0;
+        int err = file_to_buffer(&dest, &destlen, filename);
         if (err != SUCCESS){
                 debug_print("Failed to read file into buffer error: %d.\n", err);
                 return err;
         }
 
-        struct ELF elf;
-        err = parse_elf(&elf, dest);
+        struct Mach mach;
+        err = parse_mach(&mach, dest, destlen);
         if (err != SUCCESS){
-                debug_print("Failed to parse ELF, error %d.\n", err);
+                debug_print("Failed to parse Mach, error %d.\n", err);
                 return err;
         }
-
             
         return 0;
 }

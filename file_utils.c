@@ -57,13 +57,14 @@ static int read_into_buffer(uint8_t *buf, FILE *fd, size_t fileSize)
  *
  * @param       **buf           A pointer where the resulting buffer should be 
  *                              stored.
+ * @param       *buflen         The returned length of buf.
  * @param       *filename       The name of the file to read.
  *
  * @returns     Success if no error occured, the error otherwise.
  */
-int file_to_buffer(uint8_t **buf, const char *filename)
+int file_to_buffer(uint8_t **buf, uint32_t* retlen, const char *filename)
 {
-        if (buf == NULL || filename == NULL)
+        if (buf == NULL || filename == NULL || retlen == NULL)
                 return NULL_ARG;
         
         FILE *fd = fopen(filename, "rb");
@@ -76,12 +77,14 @@ int file_to_buffer(uint8_t **buf, const char *filename)
         if (size == 0)
                 return FILE_ZERO_LENGTH;
         *buf = (uint8_t *)malloc(size * sizeof(uint8_t));
+        *retlen = size * sizeof(uint8_t);
         if (*buf == NULL)
                 return OUT_OF_MEMORY;
         
         int err = read_into_buffer(*buf, fd, size);
         if (err != SUCCESS)
                 return err;
+        
         return SUCCESS; 
 }
 

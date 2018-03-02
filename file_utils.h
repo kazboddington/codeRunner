@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-int file_to_buffer(uint8_t **buf, const char *filename);
+int file_to_buffer(uint8_t **buf, uint32_t* buflen, const char *filename);
 long get_file_size(FILE *fd);
 
 
